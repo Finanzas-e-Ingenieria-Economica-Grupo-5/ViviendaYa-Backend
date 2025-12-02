@@ -59,7 +59,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy.WithOrigins(
-                "http://localhost:5173",
+                "https://kaleidoscopic-starship-6792b4.netlify.app",
                 "https://vocal-monstera-ef4f92.netlify.app"
             )
             .AllowAnyHeader()
