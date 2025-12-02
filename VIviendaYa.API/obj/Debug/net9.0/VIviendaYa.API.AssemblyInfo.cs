@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("VIviendaYa.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3e38d26533921bfbc9f56cbb0b22def5ad82912c")]
 [assembly: System.Reflection.AssemblyProductAttribute("VIviendaYa.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("VIviendaYa.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
