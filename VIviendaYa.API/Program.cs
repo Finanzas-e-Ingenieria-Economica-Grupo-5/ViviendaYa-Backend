@@ -1,11 +1,8 @@
-
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-
 using VIviendaYa.API.Authentication.application.@internal.commandservices;
 using VIviendaYa.API.Authentication.application.@internal.queryservices;
 using VIviendaYa.API.Shared.Domain.Repositories;
@@ -20,7 +17,6 @@ builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 // ----------------- Add Services -----------------
 builder.Services.AddControllers();
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Configuration.AddEnvironmentVariables();
 
@@ -32,16 +28,12 @@ builder.Services.AddSwaggerGen(c =>
         Title = "DiabeLife API",
         Version = "v1",
         Description = "API for diabetes health metrics, recommendations, food, authentication, community, and reports.",
-        Contact = new OpenApiContact
-        {
-            Name = "DevsPros Team",
-            Email = "devspros@diabelife.com"
-        }
+        Contact = new OpenApiContact { Name = "DevsPros Team", Email = "devspros@diabelife.com" }
     });
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = "JWT Authorization header using the Bearer scheme. Enter your token without 'Bearer' prefix.",
+        Description = "JWT Authorization header using the Bearer scheme.",
         Name = "Authorization",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.Http,
@@ -52,10 +44,7 @@ builder.Services.AddSwaggerGen(c =>
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
-            },
+            new OpenApiSecurityScheme { Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" } },
             Array.Empty<string>()
         }
     });
@@ -79,10 +68,14 @@ builder.Services.AddCors(options =>
     });
 });
 
-// ----------------- DB -----------------
-var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
-                      ?? builder.Configuration.GetConnectionString("DefaultConnection")
-                      ?? "Server=localhost;Database=diabelife;Uid=root;Pwd=password;";
+// ----------------- DB: MySQL via Railway env vars -----------------
+var dbHost = Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost";
+var dbPort = Environment.GetEnvironmentVariable("DB_PORT") ?? "3306";
+var dbUser = Environment.GetEnvironmentVariable("DB_USER") ?? "root";
+var dbPass = Environment.GetEnvironmentVariable("DB_PASS") ?? "password";
+var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "diabelife";
+
+var connectionString = $"Server={dbHost};Port={dbPort};Database={dbName};User={dbUser};Password={dbPass};";
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
@@ -113,20 +106,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 
 // ----------------- Repositories -----------------
-
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
-
-// ----------------- Command Services -----------------
-
+// ----------------- Command & Query Services -----------------
 builder.Services.AddScoped<IAuthCommandService, AuthCommandService>();
-
-
-// ----------------- Query Services -----------------
-
 builder.Services.AddScoped<IAuthQueryService, AuthQueryService>();
-
-
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // ----------------- Logging -----------------
@@ -144,11 +128,8 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "swagger";
 });
 
-// CORS - aplicar **una vez** y antes de Authentication/Authorization// ----------------- Middleware -----------------
-// CORS: aplicar **una sola vez** y antes de Authentication/Authorization
 app.UseCors("AllowLocalAndNetlify");
 
-// HTTPS redirection: solo en producción
 if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
@@ -157,14 +138,13 @@ if (!app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
-
 app.MapControllers();
 
-// ----------------- Ensure DB -----------------
+// ----------------- Ensure DB via migrations (mejor que EnsureCreated) -----------------
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureCreated();
+    db.Database.Migrate(); // aplica migraciones pendientes
 }
 
 app.Run();
