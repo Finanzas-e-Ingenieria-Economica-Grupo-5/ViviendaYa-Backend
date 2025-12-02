@@ -60,7 +60,9 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(
                 "https://kaleidoscopic-starship-6792b4.netlify.app",
-                "https://vocal-monstera-ef4f92.netlify.app"
+                "https://vocal-monstera-ef4f92.netlify.app",
+                "https://vivienda-ya-frontend-git-main-gabriels-projects-0a95c3fe.vercel.app"
+                
             )
             .AllowAnyHeader()
             .AllowAnyMethod()
