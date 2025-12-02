@@ -16,4 +16,4 @@ COPY --from=build /app/out ./
 ENV ASPNETCORE_ENVIRONMENT=Production
 EXPOSE 8080
 
-ENTRYPOINT ["dotnet", "ViviendaYa.API.dll"]
+ENTRYPOINT ["dotnet", "VIviendaYa.API.dll"]
