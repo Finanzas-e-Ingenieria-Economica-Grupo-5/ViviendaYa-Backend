@@ -1,0 +1,6 @@
+@VIviendaYa.API_HostAddress = http://localhost:5077
+
+GET {{VIviendaYa.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
