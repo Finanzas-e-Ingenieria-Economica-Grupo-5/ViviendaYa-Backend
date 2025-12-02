@@ -53,13 +53,13 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // ----------------- CORS -----------------
+// Esta política permite tu front en Netlify y localhost
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowLocalAndNetlify", policy =>
+    options.AddPolicy("AllowFrontend", policy =>
     {
         policy.WithOrigins(
                 "http://localhost:5173",
-                "https://diabelife-frontend.netlify.app",
                 "https://vocal-monstera-ef4f92.netlify.app"
             )
             .AllowAnyHeader()
@@ -76,15 +76,14 @@ var dbPass = Environment.GetEnvironmentVariable("DB_PASS") ?? "MRFurSUPJTEZtEMkl
 var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "railway";
 
 var connectionString = $"Server={dbHost};Port={dbPort};Database={dbName};User={dbUser};Password={dbPass};";
-
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySQL(connectionString)
 );
 
 // ----------------- JWT -----------------
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "your-super-secret-long-key";
-var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "DiabeLifeAPI";
-var jwtAudience = builder.Configuration["Jwt:Audience"] ?? "DiabeLifeClient";
+var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "ViviendaYaAPI";
+var jwtAudience = builder.Configuration["Jwt:Audience"] ?? "ViviendaYaClient";
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opt =>
@@ -121,12 +120,14 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "DiabeLife API v1");
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "ViviendaYa API v1");
     c.RoutePrefix = "swagger";
 });
 
-app.UseCors("AllowLocalAndNetlify");
+// **CORS primero**
+app.UseCors("AllowFrontend");
 
+// HTTPS redirection solo en producción
 if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
@@ -136,11 +137,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-// ----------------- Apply migrations on startup -----------------
+// ----------------- Migraciones al inicio -----------------
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
+    db.Database.Migrate(); // Esto aplica todas las migraciones pendientes
 }
 
 app.Run();
