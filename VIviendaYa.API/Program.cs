@@ -69,11 +69,11 @@ builder.Services.AddCors(options =>
 });
 
 // ----------------- DB -----------------
-var dbHost = Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost";
-var dbPort = Environment.GetEnvironmentVariable("DB_PORT") ?? "3306";
+var dbHost = Environment.GetEnvironmentVariable("DB_HOST") ?? "tramway.proxy.rlwy.net";
+var dbPort = Environment.GetEnvironmentVariable("DB_PORT") ?? "11099";
 var dbUser = Environment.GetEnvironmentVariable("DB_USER") ?? "root";
-var dbPass = Environment.GetEnvironmentVariable("DB_PASS") ?? "password";
-var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "diabelife";
+var dbPass = Environment.GetEnvironmentVariable("DB_PASS") ?? "MRFurSUPJTEZtEMklzxGiGDDbOEPKVNo";
+var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "railway";
 
 var connectionString = $"Server={dbHost};Port={dbPort};Database={dbName};User={dbUser};Password={dbPass};";
 
