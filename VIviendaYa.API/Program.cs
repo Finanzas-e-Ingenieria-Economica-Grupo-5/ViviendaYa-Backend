@@ -11,11 +11,11 @@ using VIviendaYa.API.Shared.Infrastructure.Persistence.EFC.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ----------------- Configure PORT -----------------
+// ----------------- PORT -----------------
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
-// ----------------- Add Services -----------------
+// ----------------- Services -----------------
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Configuration.AddEnvironmentVariables();
@@ -68,7 +68,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-// ----------------- DB: MySQL via Railway env vars -----------------
+// ----------------- DB -----------------
 var dbHost = Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost";
 var dbPort = Environment.GetEnvironmentVariable("DB_PORT") ?? "3306";
 var dbUser = Environment.GetEnvironmentVariable("DB_USER") ?? "root";
@@ -78,9 +78,8 @@ var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "diabelife";
 var connectionString = $"Server={dbHost};Port={dbPort};Database={dbName};User={dbUser};Password={dbPass};";
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-{
-    options.UseMySQL(connectionString);
-});
+    options.UseMySQL(connectionString)
+);
 
 // ----------------- JWT -----------------
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "your-super-secret-long-key";
@@ -105,10 +104,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-// ----------------- Repositories -----------------
+// ----------------- Repositories & Services -----------------
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-
-// ----------------- Command & Query Services -----------------
 builder.Services.AddScoped<IAuthCommandService, AuthCommandService>();
 builder.Services.AddScoped<IAuthQueryService, AuthQueryService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -137,14 +134,13 @@ if (!app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
-// ----------------- Ensure DB via migrations (mejor que EnsureCreated) -----------------
+// ----------------- Apply migrations on startup -----------------
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate(); // aplica migraciones pendientes
+    db.Database.Migrate();
 }
 
 app.Run();
