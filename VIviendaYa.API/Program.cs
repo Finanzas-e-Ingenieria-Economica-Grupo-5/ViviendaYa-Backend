@@ -25,9 +25,9 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "DiabeLife API",
+        Title = "ViviendaYa API",
         Version = "v1",
-        Description = "API for diabetes health metrics, recommendations, food, authentication, community, and reports.",
+        Description = "API for finance",
         Contact = new OpenApiContact { Name = "DevsPros Team", Email = "devspros@diabelife.com" }
     });
 
