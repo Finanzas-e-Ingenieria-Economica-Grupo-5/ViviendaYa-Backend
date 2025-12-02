@@ -60,7 +60,7 @@ builder.Services.AddCors(options =>
         policy.WithOrigins(
                 "http://localhost:5173",
                 "https://diabelife-frontend.netlify.app",
-                "https://diabelife-application.netlify.app"
+                "https://vocal-monstera-ef4f92.netlify.app"
             )
             .AllowAnyHeader()
             .AllowAnyMethod()
